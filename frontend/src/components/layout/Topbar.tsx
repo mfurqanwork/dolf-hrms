@@ -17,6 +17,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/stores/authStore";
+import { AttendanceActions } from "@/components/layout/AttendanceActions";
 
 interface TopbarProps {
   onMenuClick?: () => void;
@@ -65,6 +66,8 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       </div>
 
       <div className="flex items-center gap-3">
+        <AttendanceActions />
+
         <DropdownMenu>
           <DropdownMenuTrigger>
             <Button

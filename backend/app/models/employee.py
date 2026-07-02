@@ -5,6 +5,7 @@ from uuid import UUID, uuid4
 from sqlmodel import Field, Relationship, SQLModel
 
 if TYPE_CHECKING:
+    from app.models.attendance import AttendanceRecord
     from app.models.company import Company
     from app.models.request import Request
     from app.models.user import User
@@ -38,6 +39,7 @@ class Employee(SQLModel, table=True):
     user: Optional["User"] = Relationship(back_populates="employee")
     contract: Optional["EmployeeContract"] = Relationship(back_populates="employee")
     requests: list["Request"] = Relationship(back_populates="employee")
+    attendance_records: list["AttendanceRecord"] = Relationship(back_populates="employee")
 
 
 class EmployeeContract(SQLModel, table=True):

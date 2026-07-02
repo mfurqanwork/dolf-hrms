@@ -8,6 +8,7 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { DataTable } from "@/components/ui/data-table";
+import { CardTablePageSkeleton } from "@/components/shared/LoadingState";
 import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { useEmployees } from "@/hooks/useHrmsApi";
@@ -29,33 +30,36 @@ export function EmployeesPage() {
         ]}
       />
 
-      <Card className="border-border/80 shadow-sm">
-        <CardHeader>
-          <CardTitle className="font-heading text-xl">
-            {t("common.employees")}
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="px-0 pb-0 sm:px-6 sm:pb-6">
-          {!isLoading && data.length === 0 ? (
-            <div className="px-6 pb-6">
-              <EmptyState
-                title={t("common.noData")}
-                description={t("common.comingSoon")}
-                icon={Users}
+      {isLoading ? (
+        <CardTablePageSkeleton columns={5} rows={8} />
+      ) : (
+        <Card className="border-border/80 shadow-sm">
+          <CardHeader>
+            <CardTitle className="font-heading text-xl">
+              {t("common.employees")}
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="px-0 pb-0 sm:px-6 sm:pb-6">
+            {data.length === 0 ? (
+              <div className="px-6 pb-6">
+                <EmptyState
+                  title={t("common.noData")}
+                  description={t("common.comingSoon")}
+                  icon={Users}
+                />
+              </div>
+            ) : (
+              <DataTable
+                columns={columns}
+                data={data}
+                searchKey="employee"
+                searchPlaceholder={t("common.searchEmployees")}
+                emptyMessage={t("common.noData")}
               />
-            </div>
-          ) : (
-            <DataTable
-              columns={columns}
-              data={data}
-              searchKey="employee"
-              searchPlaceholder={t("common.searchEmployees")}
-              emptyMessage={t("common.noData")}
-              isLoading={isLoading}
-            />
-          )}
-        </CardContent>
-      </Card>
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

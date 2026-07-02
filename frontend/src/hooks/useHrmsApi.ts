@@ -1,6 +1,10 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { api } from "@/lib/api"
 import type {
+  AttendanceChartData,
+  AttendanceQueryParams,
+  AttendanceRecord,
+  AttendanceToday,
   AuthUser,
   DashboardStats,
   Employee,
@@ -16,6 +20,9 @@ export const queryKeys = {
   employees: ["employees"] as const,
   employee: (id: string) => ["employees", id] as const,
   requests: ["requests"] as const,
+  attendance: (params?: AttendanceQueryParams) => ["attendance", params] as const,
+  attendanceChart: (params?: AttendanceQueryParams) => ["attendance-chart", params] as const,
+  attendanceToday: ["attendance-today"] as const,
 }
 
 export function useMe(enabled = true) {
@@ -105,5 +112,52 @@ export function useLogin() {
   return useMutation({
     mutationFn: async (payload: { email: string; password: string }) =>
       (await api.post<TokenResponse>("/auth/login/json", payload)).data,
+  })
+}
+
+export function useAttendance(params?: AttendanceQueryParams) {
+  return useQuery({
+    queryKey: queryKeys.attendance(params),
+    queryFn: async () =>
+      (await api.get<AttendanceRecord[]>("/attendance", { params })).data,
+  })
+}
+
+export function useAttendanceChart(params?: AttendanceQueryParams) {
+  return useQuery({
+    queryKey: queryKeys.attendanceChart(params),
+    queryFn: async () =>
+      (await api.get<AttendanceChartData>("/attendance/chart", { params })).data,
+  })
+}
+
+export function useTodayAttendance(enabled = true) {
+  return useQuery({
+    queryKey: queryKeys.attendanceToday,
+    queryFn: async () => (await api.get<AttendanceToday>("/attendance/today")).data,
+    enabled,
+    retry: false,
+  })
+}
+
+export function useCheckIn() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => (await api.post<AttendanceRecord>("/attendance/check-in")).data,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["attendance"] })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.attendanceToday })
+    },
+  })
+}
+
+export function useCheckOut() {
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => (await api.post<AttendanceRecord>("/attendance/check-out")).data,
+    onSuccess: () => {
+      void queryClient.invalidateQueries({ queryKey: ["attendance"] })
+      void queryClient.invalidateQueries({ queryKey: queryKeys.attendanceToday })
+    },
   })
 }

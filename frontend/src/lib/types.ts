@@ -86,3 +86,49 @@ export interface EmployeeUpdatePayload {
   work_type?: string
   shift?: string
 }
+
+export type AttendanceStatus = "present" | "late" | "absent" | "on_leave" | "half_day"
+
+export interface AttendanceRecord {
+  id: string
+  company_id: string
+  employee_id: string
+  employee_name: string | null
+  employee_code: string | null
+  work_date: string
+  check_in: string | null
+  check_out: string | null
+  scheduled_start: string
+  scheduled_end: string
+  hours_worked: number | null
+  status: AttendanceStatus
+}
+
+export interface AttendanceToday {
+  record: AttendanceRecord | null
+  can_check_in: boolean
+  can_check_out: boolean
+  is_working_day: boolean
+  schedule_start: string
+  schedule_end: string
+}
+
+export interface AttendanceChartPoint {
+  work_date: string
+  hours_worked: number
+  record_count: number
+  avg_check_in: string | null
+  avg_check_out: string | null
+}
+
+export interface AttendanceChartData {
+  points: AttendanceChartPoint[]
+  schedule_start: string
+  schedule_end: string
+}
+
+export interface AttendanceQueryParams {
+  from_date?: string
+  to_date?: string
+  employee_id?: string
+}

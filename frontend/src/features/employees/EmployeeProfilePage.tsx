@@ -13,6 +13,7 @@ import { PageHeader } from "@/components/shared/PageHeader"
 import { ProfileSkeleton } from "@/components/shared/LoadingState"
 import { useEmployee } from "@/hooks/useHrmsApi"
 import { isEmployeeActive } from "@/lib/employee"
+import { EmployeeAttendancePanel } from "@/features/attendance/EmployeeAttendancePanel"
 
 export function EmployeeProfilePage() {
   const { id = "" } = useParams()
@@ -147,7 +148,11 @@ export function EmployeeProfilePage() {
           </Card>
         </TabsContent>
 
-        {["attendance", "leave", "payroll"].map((tab) => (
+        <TabsContent value="attendance">
+          <EmployeeAttendancePanel employeeId={employee.id} />
+        </TabsContent>
+
+        {["leave", "payroll"].map((tab) => (
           <TabsContent key={tab} value={tab}>
             <Alert>
               <Clock />

@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select"
 import { Field, FieldContent, FieldDescription, FieldGroup, FieldLabel } from "@/components/ui/field"
 import { DataTable } from "@/components/ui/data-table"
+import { CardTablePageSkeleton } from "@/components/shared/LoadingState"
 import { EmptyState } from "@/components/shared/EmptyState"
 import { PageHeader } from "@/components/shared/PageHeader"
 import {
@@ -140,28 +141,31 @@ export function RequestsPage() {
         actions={newRequestDialog}
       />
 
-      <Card className="border-border/80 shadow-sm">
-        <CardHeader>
-          <CardTitle className="font-heading text-xl">{t("common.requests")}</CardTitle>
-          <CardDescription>{data.length} {t("common.rowsTotal")}</CardDescription>
-        </CardHeader>
-        <CardContent className="px-0 pb-0 sm:px-6 sm:pb-6">
-          {!isLoading && data.length === 0 ? (
-            <div className="px-6 pb-6">
-              <EmptyState title={t("common.noData")} description={t("common.newRequest")} icon={ClipboardList} />
-            </div>
-          ) : (
-            <DataTable
-              columns={columns}
-              data={data}
-              searchKey="title"
-              searchPlaceholder={t("common.searchRequests")}
-              emptyMessage={t("common.noData")}
-              isLoading={isLoading}
-            />
-          )}
-        </CardContent>
-      </Card>
+      {isLoading ? (
+        <CardTablePageSkeleton columns={isAdmin ? 5 : 4} rows={8} />
+      ) : (
+        <Card className="border-border/80 shadow-sm">
+          <CardHeader>
+            <CardTitle className="font-heading text-xl">{t("common.requests")}</CardTitle>
+            <CardDescription>{data.length} {t("common.rowsTotal")}</CardDescription>
+          </CardHeader>
+          <CardContent className="px-0 pb-0 sm:px-6 sm:pb-6">
+            {data.length === 0 ? (
+              <div className="px-6 pb-6">
+                <EmptyState title={t("common.noData")} description={t("common.newRequest")} icon={ClipboardList} />
+              </div>
+            ) : (
+              <DataTable
+                columns={columns}
+                data={data}
+                searchKey="title"
+                searchPlaceholder={t("common.searchRequests")}
+                emptyMessage={t("common.noData")}
+              />
+            )}
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }

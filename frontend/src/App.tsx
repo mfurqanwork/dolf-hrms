@@ -9,6 +9,8 @@ import { EmployeesPage } from "@/features/employees/EmployeesPage"
 import { RequestsPage } from "@/features/requests/RequestsPage"
 import { SettingsPage } from "@/features/settings/SettingsPage"
 import { PlaceholderPage } from "@/features/shared/PlaceholderPage"
+import { AttendancePage } from "@/features/attendance/AttendancePage"
+import { AdminRoute } from "@/components/layout/AdminRoute"
 
 function App() {
   const token = useAuthStore((s) => s.token)
@@ -22,6 +24,14 @@ function App() {
           <Route path="employees" element={<EmployeesPage />} />
           <Route path="employees/:id" element={<EmployeeProfilePage />} />
           <Route path="requests" element={<RequestsPage />} />
+          <Route
+            path="attendance"
+            element={
+              <AdminRoute>
+                <AttendancePage />
+              </AdminRoute>
+            }
+          />
           <Route path="recruitment" element={<PlaceholderPage titleKey="recruitment" />} />
           <Route path="onboarding" element={<PlaceholderPage titleKey="onboarding" />} />
           <Route path="settings" element={<SettingsPage />} />

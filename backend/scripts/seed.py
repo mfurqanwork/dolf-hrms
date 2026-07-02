@@ -5,12 +5,16 @@ from sqlalchemy import delete, select
 
 from app.core.database import async_session_maker, init_db
 from app.core.security import get_password_hash
+from app.models.attendance import AttendanceRecord
 from app.models.company import Company
 from app.models.employee import Employee, EmployeeContract
 from app.models.request import Request, RequestStatus, RequestType
 from app.models.user import User, UserRole
+from scripts.seed_attendance import generate_attendance_records
 
 DEFAULT_PASSWORD = "DolfTech123!"
+COMPANY_SLUG = "dolf-technologies"
+SUPER_ADMIN_EMAIL = "admin@dolftech.com"
 
 
 def make_email(first_name: str, last_name: str) -> str:
@@ -41,62 +45,171 @@ TEAM = [
 ]
 
 
+async def upsert_company(session) -> Company:
+    company = (
+        await session.execute(select(Company).where(Company.slug == COMPANY_SLUG))
+    ).scalar_one_or_none()
+
+    if company is None:
+        company = Company(
+            name="Dolf Technologies",
+            slug=COMPANY_SLUG,
+            location="Saudi Arabia",
+        )
+        session.add(company)
+        print("Creating company: Dolf Technologies")
+    else:
+        company.name = "Dolf Technologies"
+        company.location = "Saudi Arabia"
+        session.add(company)
+        print("Updating company: Dolf Technologies")
+
+    await session.flush()
+    return company
+
+
+async def upsert_user(
+    session,
+    *,
+    email: str,
+    full_name: str,
+    role: UserRole,
+    company_id=None,
+) -> User:
+    password_hash = get_password_hash(DEFAULT_PASSWORD)
+    user = (await session.execute(select(User).where(User.email == email))).scalar_one_or_none()
+
+    if user is None:
+        user = User(
+            email=email,
+            hashed_password=password_hash,
+            full_name=full_name,
+            role=role,
+            company_id=company_id,
+            is_active=True,
+        )
+        session.add(user)
+    else:
+        user.hashed_password = password_hash
+        user.full_name = full_name
+        user.role = role
+        user.company_id = company_id
+        user.is_active = True
+        session.add(user)
+
+    await session.flush()
+    return user
+
+
+async def upsert_employee(
+    session,
+    *,
+    company_id,
+    user: User,
+    employee_code: str,
+    first_name: str,
+    last_name: str,
+    email: str,
+    department: str,
+    job_title: str,
+    hire_date: date,
+) -> Employee:
+    employee = (
+        await session.execute(select(Employee).where(Employee.email == email))
+    ).scalar_one_or_none()
+
+    if employee is None:
+        employee = (
+            await session.execute(select(Employee).where(Employee.employee_code == employee_code))
+        ).scalar_one_or_none()
+
+    if employee is None:
+        employee = Employee(
+            user_id=user.id,
+            company_id=company_id,
+            employee_code=employee_code,
+            first_name=first_name,
+            last_name=last_name,
+            email=email,
+            department=department,
+            job_title=job_title,
+            hire_date=hire_date,
+            avatar_initials=initials(first_name, last_name),
+            nationality="Saudi Arabia",
+            address="Riyadh, Saudi Arabia",
+            work_type="On-site",
+            shift="Day",
+            status="active",
+        )
+        session.add(employee)
+    else:
+        employee.user_id = user.id
+        employee.company_id = company_id
+        employee.employee_code = employee_code
+        employee.first_name = first_name
+        employee.last_name = last_name
+        employee.email = email
+        employee.department = department
+        employee.job_title = job_title
+        employee.hire_date = hire_date
+        employee.avatar_initials = initials(first_name, last_name)
+        employee.nationality = "Saudi Arabia"
+        employee.address = "Riyadh, Saudi Arabia"
+        employee.work_type = "On-site"
+        employee.shift = "Day"
+        employee.status = "active"
+        session.add(employee)
+
+    await session.flush()
+    return employee
+
+
+async def refresh_company_seed_data(session, company_id) -> None:
+    """Replace requests, contracts, and attendance so re-seeding stays idempotent."""
+    await session.execute(delete(Request).where(Request.company_id == company_id))
+    await session.execute(delete(AttendanceRecord).where(AttendanceRecord.company_id == company_id))
+    await session.execute(
+        delete(EmployeeContract).where(
+            EmployeeContract.employee_id.in_(
+                select(Employee.id).where(Employee.company_id == company_id)
+            )
+        )
+    )
+    await session.flush()
+
+
 async def seed() -> None:
     await init_db()
 
     async with async_session_maker() as session:
-        existing = (await session.execute(select(Company).where(Company.slug == "dolf-technologies"))).scalar_one_or_none()
-        if existing:
-            print("Resetting existing Dolf Technologies seed data...")
-            await session.execute(delete(Request).where(Request.company_id == existing.id))
-            await session.execute(
-                delete(EmployeeContract).where(
-                    EmployeeContract.employee_id.in_(select(Employee.id).where(Employee.company_id == existing.id))
-                )
-            )
-            await session.execute(delete(Employee).where(Employee.company_id == existing.id))
-            await session.execute(delete(User).where(User.company_id == existing.id))
-            await session.execute(delete(Company).where(Company.id == existing.id))
-            await session.commit()
+        company = await upsert_company(session)
 
-        company = Company(
-            name="Dolf Technologies",
-            slug="dolf-technologies",
-            location="Saudi Arabia",
-        )
-        session.add(company)
-        await session.flush()
-
-        super_admin = User(
-            email="admin@dolftech.com",
-            hashed_password=get_password_hash(DEFAULT_PASSWORD),
+        await upsert_user(
+            session,
+            email=SUPER_ADMIN_EMAIL,
             full_name="Dolf Super Admin",
             role=UserRole.SUPER_ADMIN,
+            company_id=None,
         )
-        session.add(super_admin)
-        await session.flush()
 
         employees: list[Employee] = []
-        users: list[User] = []
 
         for index, (first_name, last_name, job_title, department) in enumerate(TEAM, start=1):
             email = make_email(first_name, last_name)
             role = UserRole.COMPANY_ADMIN if job_title == "HR Manager" else UserRole.EMPLOYEE
 
-            user = User(
+            user = await upsert_user(
+                session,
                 email=email,
-                hashed_password=get_password_hash(DEFAULT_PASSWORD),
                 full_name=f"{first_name} {last_name}",
                 role=role,
                 company_id=company.id,
             )
-            users.append(user)
-            session.add(user)
-            await session.flush()
 
-            employee = Employee(
-                user_id=user.id,
+            employee = await upsert_employee(
+                session,
                 company_id=company.id,
+                user=user,
                 employee_code=f"EMP-{index:03d}",
                 first_name=first_name,
                 last_name=last_name,
@@ -104,16 +217,10 @@ async def seed() -> None:
                 department=department,
                 job_title=job_title,
                 hire_date=date(2022, 1, 1 + (index % 28)),
-                avatar_initials=initials(first_name, last_name),
-                nationality="Saudi Arabia",
-                address="Riyadh, Saudi Arabia",
-                work_type="On-site",
-                shift="Day",
             )
             employees.append(employee)
-            session.add(employee)
 
-        await session.flush()
+        await refresh_company_seed_data(session, company.id)
 
         session.add(
             EmployeeContract(
@@ -153,8 +260,13 @@ async def seed() -> None:
         ]
         session.add_all(requests)
 
+        attendance_records = generate_attendance_records(company.id, employees, days_back=45)
+        session.add_all(attendance_records)
+
         await session.commit()
-        print("Seed data created successfully.")
+        print("Seed data upserted successfully.")
+        print(f"  Employees: {len(employees)}")
+        print(f"  Attendance records: {len(attendance_records)}")
         print(f"Default password for all accounts: {DEFAULT_PASSWORD}")
         print("Demo logins:")
         print("  Super Admin: admin@dolftech.com")

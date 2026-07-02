@@ -1,9 +1,10 @@
-from datetime import date, datetime
+from datetime import date, datetime, time
 from typing import Optional
 from uuid import UUID
 
 from pydantic import BaseModel, EmailStr
 
+from app.models.attendance import AttendanceStatus
 from app.models.request import RequestStatus, RequestType
 from app.models.user import UserRole
 
@@ -120,3 +121,41 @@ class DashboardStats(BaseModel):
     pending_requests: int
     approved_requests: int
     rejected_requests: int
+
+
+class AttendanceRead(BaseModel):
+    id: UUID
+    company_id: UUID
+    employee_id: UUID
+    employee_name: Optional[str] = None
+    employee_code: Optional[str] = None
+    work_date: date
+    check_in: Optional[datetime] = None
+    check_out: Optional[datetime] = None
+    scheduled_start: time
+    scheduled_end: time
+    hours_worked: Optional[float] = None
+    status: AttendanceStatus
+
+
+class AttendanceTodayRead(BaseModel):
+    record: Optional[AttendanceRead] = None
+    can_check_in: bool
+    can_check_out: bool
+    is_working_day: bool = True
+    schedule_start: str
+    schedule_end: str
+
+
+class AttendanceChartPoint(BaseModel):
+    work_date: date
+    hours_worked: float
+    record_count: int
+    avg_check_in: Optional[str] = None
+    avg_check_out: Optional[str] = None
+
+
+class AttendanceChartData(BaseModel):
+    points: list[AttendanceChartPoint]
+    schedule_start: str
+    schedule_end: str

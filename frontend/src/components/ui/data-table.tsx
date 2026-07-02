@@ -62,7 +62,13 @@ export function DataTable<TData, TValue>({
   })
 
   if (isLoading) {
-    return <TableSkeleton />
+    return (
+      <TableSkeleton
+        rows={pageSize}
+        columns={columns.length}
+        showSearch={Boolean(searchKey)}
+      />
+    )
   }
 
   return (

@@ -15,3 +15,4 @@ class Company(SQLModel, table=True):
 
     users: list["User"] = Relationship(back_populates="company")
     employees: list["Employee"] = Relationship(back_populates="company")
+    attendance_records: list["AttendanceRecord"] = Relationship(back_populates="company")
