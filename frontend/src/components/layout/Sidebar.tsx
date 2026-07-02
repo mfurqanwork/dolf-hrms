@@ -1,5 +1,5 @@
-import { NavLink } from "react-router-dom"
-import { useTranslation } from "react-i18next"
+import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   Briefcase,
   ClipboardList,
@@ -7,11 +7,11 @@ import {
   Settings,
   UserPlus,
   Users,
-} from "lucide-react"
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Separator } from "@/components/ui/separator"
-import { cn } from "@/lib/utils"
-import { brandLogoSrc } from "@/lib/brand"
+} from "lucide-react";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { brandLogoSrc } from "@/lib/brand";
 
 const navItems = [
   { to: "/", icon: LayoutDashboard, labelKey: "dashboard" },
@@ -20,30 +20,36 @@ const navItems = [
   { to: "/recruitment", icon: Briefcase, labelKey: "recruitment" },
   { to: "/onboarding", icon: UserPlus, labelKey: "onboarding" },
   { to: "/settings", icon: Settings, labelKey: "settings" },
-]
+];
 
 export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
-  const { t } = useTranslation()
+  const { t } = useTranslation();
 
   return (
-    <aside className="flex h-full w-64 flex-col bg-sidebar text-sidebar-foreground">
-      <div className="flex items-center gap-3 px-5 py-5">
-        <img
-          src={brandLogoSrc}
-          alt="Dolf Technologies"
-          className="h-9 w-9 rounded-lg bg-white/10 object-contain p-1"
-          onError={(e) => {
-            e.currentTarget.style.display = "none"
-          }}
-        />
-        <div className="text-start">
-          <p className="text-sm font-semibold leading-tight">Dolf Technologies</p>
-          <p className="text-xs text-sidebar-foreground/70">{t("common.appName")}</p>
+    <aside className="flex h-full w-[17rem] flex-col bg-sidebar text-sidebar-foreground shadow-lg">
+      <div className="flex items-center gap-3 px-6 py-6">
+        <div className="flex size-11 items-center justify-center rounded-xl bg-white p-1.5">
+          <img
+            src={brandLogoSrc}
+            alt="Dolf Technologies"
+            className="size-full object-contain"
+            onError={(e) => {
+              e.currentTarget.style.display = "none";
+            }}
+          />
+        </div>
+        <div className="min-w-0 text-start">
+          <p className="truncate font-heading text-sm font-semibold leading-tight">
+            Dolf Technologies
+          </p>
+          <p className="truncate text-xs text-sidebar-foreground/70">
+            {t("common.appName")}
+          </p>
         </div>
       </div>
       <Separator className="bg-sidebar-border" />
       <ScrollArea className="flex-1">
-        <nav className="space-y-1 p-3">
+        <nav className="space-y-1.5 p-4">
           {navItems.map(({ to, icon: Icon, labelKey }) => (
             <NavLink
               key={to}
@@ -52,19 +58,19 @@ export function Sidebar({ onNavigate }: { onNavigate?: () => void }) {
               onClick={onNavigate}
               className={({ isActive }) =>
                 cn(
-                  "flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                  "flex cursor-pointer items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-colors duration-200",
                   isActive
-                    ? "bg-sidebar-accent text-sidebar-accent-foreground"
-                    : "text-sidebar-foreground/80 hover:bg-sidebar-accent/60 hover:text-sidebar-foreground",
+                    ? "bg-sidebar-accent text-sidebar-foreground shadow-sm ring-1 ring-sidebar-primary/40"
+                    : "text-sidebar-foreground/85 hover:bg-sidebar-accent/70 hover:text-sidebar-foreground",
                 )
               }
             >
-              <Icon className="size-4 shrink-0" />
+              <Icon className="size-5 shrink-0" />
               {t(`common.${labelKey}`)}
             </NavLink>
           ))}
         </nav>
       </ScrollArea>
     </aside>
-  )
+  );
 }

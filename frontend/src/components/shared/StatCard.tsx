@@ -12,13 +12,19 @@ interface StatCardProps {
 
 export function StatCard({ label, value, icon: Icon, iconClassName, isLoading }: StatCardProps) {
   return (
-    <Card>
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
+    <Card className="border-border/80 shadow-sm transition-shadow duration-200 hover:shadow-md">
+      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
         <CardTitle className="text-sm font-medium text-muted-foreground">{label}</CardTitle>
-        <Icon className={`size-4 ${iconClassName ?? "text-primary"}`} />
+        <div className="flex size-10 items-center justify-center rounded-xl bg-secondary">
+          <Icon className={`size-5 ${iconClassName ?? "text-primary"}`} />
+        </div>
       </CardHeader>
-      <CardContent>
-        {isLoading ? <Skeleton className="h-8 w-16" /> : <p className="text-3xl font-bold">{value}</p>}
+      <CardContent className="pb-6">
+        {isLoading ? (
+          <Skeleton className="h-9 w-20" />
+        ) : (
+          <p className="font-heading text-4xl font-semibold tracking-tight">{value}</p>
+        )}
       </CardContent>
     </Card>
   )

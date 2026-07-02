@@ -61,6 +61,20 @@
     "startDate": "تاريخ البدء",
     "loginSubtitle": "سجّل الدخول لإدارة فريق العمل",
     "newRequest": "طلب جديد",
-    "submitRequest": "إرسال الطلب"
+    "submitRequest": "إرسال الطلب",
+    "search": "بحث...",
+    "searchEmployees": "البحث عن موظفين...",
+    "searchRequests": "البحث عن طلبات...",
+    "previous": "السابق",
+    "next": "التالي",
+    "rowsPerPage": "صفوف لكل صفحة",
+    "page": "صفحة",
+    "of": "من",
+    "rowsTotal": "صف",
+    "back": "رجوع",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "enabled": "مفعّل",
+    "disabled": "معطّل"
   }
 }

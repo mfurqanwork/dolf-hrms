@@ -61,6 +61,20 @@
     "startDate": "Start Date",
     "loginSubtitle": "Sign in to manage your workforce",
     "newRequest": "New Request",
-    "submitRequest": "Submit Request"
+    "submitRequest": "Submit Request",
+    "search": "Search...",
+    "searchEmployees": "Search employees...",
+    "searchRequests": "Search requests...",
+    "previous": "Previous",
+    "next": "Next",
+    "rowsPerPage": "Rows per page",
+    "page": "Page",
+    "of": "of",
+    "rowsTotal": "rows",
+    "back": "Back",
+    "active": "Active",
+    "inactive": "Inactive",
+    "enabled": "Enabled",
+    "disabled": "Disabled"
   }
 }

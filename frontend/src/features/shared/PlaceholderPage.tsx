@@ -8,14 +8,14 @@ export function PlaceholderPage({ titleKey }: { titleKey: string }) {
   const { t } = useTranslation()
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <PageHeader
         title={t(`common.${titleKey}`)}
         breadcrumbs={[{ label: t("common.dashboard"), href: "/" }, { label: t(`common.${titleKey}`) }]}
       />
-      <Card>
+      <Card className="border-border/80 shadow-sm">
         <CardHeader>
-          <CardTitle>{t(`common.${titleKey}`)}</CardTitle>
+          <CardTitle className="font-heading text-xl">{t(`common.${titleKey}`)}</CardTitle>
           <CardDescription>{t("common.comingSoon")}</CardDescription>
         </CardHeader>
         <CardContent>

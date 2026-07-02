@@ -38,24 +38,28 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-primary/10 via-background to-accent/10 p-4">
-      <Card className="w-full max-w-md shadow-lg">
-        <CardHeader className="text-center">
-          <div className="mx-auto mb-3 flex size-16 items-center justify-center rounded-2xl bg-primary/10">
-            <img src={brandLogoSrc} alt="Dolf" className="size-12 object-contain" />
+    <div className="flex min-h-screen items-center justify-center bg-[#f8fafc] p-6">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.12),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.1),transparent_35%)]" />
+      <Card className="relative w-full max-w-md border-border/80 shadow-xl">
+        <CardHeader className="space-y-4 pb-2 text-center">
+          <div className="mx-auto flex size-20 items-center justify-center rounded-2xl bg-primary/10 p-3">
+            <img src={brandLogoSrc} alt="Dolf" className="size-full object-contain" />
           </div>
-          <CardTitle>{t("common.appName")}</CardTitle>
-          <CardDescription>{t("common.loginSubtitle")}</CardDescription>
+          <div className="space-y-2">
+            <CardTitle className="font-heading text-2xl">{t("common.appName")}</CardTitle>
+            <CardDescription className="text-base">{t("common.loginSubtitle")}</CardDescription>
+          </div>
         </CardHeader>
-        <CardContent>
+        <CardContent className="pb-8">
           <form onSubmit={handleSubmit}>
-            <FieldGroup>
+            <FieldGroup className="gap-5">
               <Field>
                 <FieldLabel htmlFor="email">{t("common.email")}</FieldLabel>
                 <FieldContent>
                   <Input
                     id="email"
                     type="email"
+                    className="h-11"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     required
@@ -68,13 +72,14 @@ export function LoginPage() {
                   <Input
                     id="password"
                     type="password"
+                    className="h-11"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     required
                   />
                 </FieldContent>
               </Field>
-              <Button type="submit" className="w-full" disabled={login.isPending}>
+              <Button type="submit" size="lg" className="mt-2 w-full" disabled={login.isPending}>
                 {login.isPending ? t("common.loading") : t("common.login")}
               </Button>
             </FieldGroup>
