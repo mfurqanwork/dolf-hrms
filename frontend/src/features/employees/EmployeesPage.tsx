@@ -13,11 +13,18 @@ import { EmptyState } from "@/components/shared/EmptyState";
 import { PageHeader } from "@/components/shared/PageHeader";
 import { useEmployees } from "@/hooks/useHrmsApi";
 import { getEmployeeColumns } from "@/features/employees/columns";
+import { useAuthStore } from "@/stores/authStore";
+import { isAdminRole } from "@/lib/auth";
 
 export function EmployeesPage() {
   const { t } = useTranslation();
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = isAdminRole(user?.role);
   const { data = [], isLoading } = useEmployees();
-  const columns = useMemo(() => getEmployeeColumns(t), [t]);
+  const columns = useMemo(
+    () => getEmployeeColumns(t, { currentUserId: user?.id, isAdmin }),
+    [t, user?.id, isAdmin],
+  );
 
   return (
     <div className="space-y-8">

@@ -6,11 +6,14 @@ from pathlib import Path
 from alembic import command
 from alembic.config import Config
 
-BACKEND_ROOT = Path(__file__).resolve().parents[1]
+BACKEND_ROOT = Path(__file__).resolve().parents[2]
 
 
 def get_alembic_config() -> Config:
-    return Config(str(BACKEND_ROOT / "alembic.ini"))
+    config = Config(str(BACKEND_ROOT / "alembic.ini"))
+    # Resolve paths relative to backend/ regardless of process cwd (e.g. uvicorn debug).
+    config.set_main_option("script_location", str(BACKEND_ROOT / "alembic"))
+    return config
 
 
 def run_migrations(revision: str = "head") -> None:

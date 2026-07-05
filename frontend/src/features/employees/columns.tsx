@@ -9,7 +9,15 @@ import { BoolBadge } from "@/components/shared/BoolBadge"
 import type { Employee } from "@/lib/types"
 import { isEmployeeActive } from "@/lib/employee"
 
-export function getEmployeeColumns(t: TFunction): ColumnDef<Employee>[] {
+export interface GetEmployeeColumnsOptions {
+  currentUserId?: string
+  isAdmin: boolean
+}
+
+export function getEmployeeColumns(
+  t: TFunction,
+  { currentUserId, isAdmin }: GetEmployeeColumnsOptions,
+): ColumnDef<Employee>[] {
   return [
     {
       id: "employee",
@@ -67,16 +75,22 @@ export function getEmployeeColumns(t: TFunction): ColumnDef<Employee>[] {
       id: "actions",
       enableSorting: false,
       header: () => <div className="text-end">{t("common.actions")}</div>,
-      cell: ({ row }) => (
-        <div className="text-end">
-          <Link to={`/employees/${row.original.id}`}>
-            <Button variant="outline" size="lg">
-              <Eye />
-              {t("common.view")}
-            </Button>
-          </Link>
-        </div>
-      ),
+      cell: ({ row }) => {
+        const employee = row.original
+        const canView =
+          isAdmin || (currentUserId != null && employee.user_id === currentUserId)
+        if (!canView) return null
+        return (
+          <div className="text-end">
+            <Link to={`/employees/${employee.id}`}>
+              <Button variant="outline" size="lg">
+                <Eye />
+                {t("common.view")}
+              </Button>
+            </Link>
+          </div>
+        )
+      },
     },
   ]
 }

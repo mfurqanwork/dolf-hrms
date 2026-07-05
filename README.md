@@ -43,11 +43,11 @@ npm run dev
 
 Default password for all accounts: **`DolfTech123!`**
 
-| Role                 | Email                      |
-| -------------------- | -------------------------- |
-| Super Admin          | `admin@dolftech.com`       |
-| HR Manager           | `b.alobaidan@dolftech.com` |
-| Full Stack Developer | `m.furqan@dolftech.com`    |
+| Role        | Email                      |
+| ----------- | -------------------------- |
+| Super Admin | `admin@dolftech.com`       |
+| HR Manager  | `b.alobaidan@dolftech.com` |
+| AI Engineer | `m.furqan@dolftech.com`    |
 
 All Dolf Technologies employees use `{first_initial}.{lastname}@dolftech.com`.
 

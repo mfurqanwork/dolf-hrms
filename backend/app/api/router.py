@@ -116,12 +116,6 @@ async def list_employees(
 ) -> list[EmployeeRead]:
     query = select(Employee).options(selectinload(Employee.contract)).order_by(Employee.first_name)
 
-    if current_user.role == UserRole.EMPLOYEE:
-        employee = await get_user_employee(session, current_user)
-        if employee is None:
-            return []
-        return [employee_to_read(employee)]
-
     if current_user.role != UserRole.SUPER_ADMIN:
         if current_user.company_id is None:
             raise HTTPException(status_code=400, detail="User has no company")

@@ -8,8 +8,8 @@ export function AppShell() {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <div className="flex min-h-screen bg-background">
-      <div className="hidden md:block">
+    <div className="flex h-full overflow-hidden bg-background">
+      <div className="hidden h-full shrink-0 md:block">
         <Sidebar />
       </div>
       <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -17,9 +17,9 @@ export function AppShell() {
           <Sidebar onNavigate={() => setMobileOpen(false)} />
         </SheetContent>
       </Sheet>
-      <div className="flex min-h-screen min-w-0 flex-1 flex-col">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
         <Topbar onMenuClick={() => setMobileOpen(true)} />
-        <main className="flex-1 overflow-auto">
+        <main className="min-h-0 flex-1 overflow-y-auto">
           <div className="mx-auto w-full px-6 py-8">
             <Outlet />
           </div>

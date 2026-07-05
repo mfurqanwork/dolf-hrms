@@ -1,31 +1,59 @@
-import { useParams } from "react-router-dom"
-import { useTranslation } from "react-i18next"
-import { Clock } from "lucide-react"
-import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
-import { BoolBadge } from "@/components/shared/BoolBadge"
-import { EmptyState } from "@/components/shared/EmptyState"
-import { InfoList } from "@/components/shared/InfoList"
-import { PageHeader } from "@/components/shared/PageHeader"
-import { ProfileSkeleton } from "@/components/shared/LoadingState"
-import { useEmployee } from "@/hooks/useHrmsApi"
-import { isEmployeeActive } from "@/lib/employee"
-import { EmployeeAttendancePanel } from "@/features/attendance/EmployeeAttendancePanel"
+import { useParams, Navigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+import { Clock } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Badge } from "@/components/ui/badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { BoolBadge } from "@/components/shared/BoolBadge";
+import { EmptyState } from "@/components/shared/EmptyState";
+import { InfoList } from "@/components/shared/InfoList";
+import { PageHeader } from "@/components/shared/PageHeader";
+import { ProfileSkeleton } from "@/components/shared/LoadingState";
+import { useEmployee } from "@/hooks/useHrmsApi";
+import { isEmployeeActive } from "@/lib/employee";
+import { isAdminRole } from "@/lib/auth";
+import { useAuthStore } from "@/stores/authStore";
+import { EmployeeAttendancePanel } from "@/features/attendance/EmployeeAttendancePanel";
 
 export function EmployeeProfilePage() {
-  const { id = "" } = useParams()
-  const { t } = useTranslation()
-  const { data: employee, isLoading } = useEmployee(id)
+  const { id = "" } = useParams();
+  const { t } = useTranslation();
+  const user = useAuthStore((s) => s.user);
+  const isAdmin = isAdminRole(user?.role);
+  const { data: employee, isLoading, isError } = useEmployee(id);
 
-  if (isLoading) return <ProfileSkeleton />
-  if (!employee) {
-    return <EmptyState title={t("common.noData")} description={t("common.employee")} />
+  if (isLoading) return <ProfileSkeleton />;
+  if (isError || !employee) {
+    if (!isAdmin) {
+      return <Navigate to="/employees" replace />;
+    }
+    return (
+      <EmptyState
+        title={t("common.noData")}
+        description={t("common.employee")}
+      />
+    );
   }
 
-  const fullName = `${employee.first_name} ${employee.last_name}`
+  const isOwnProfile = employee.user_id === user?.id;
+  if (!isAdmin && !isOwnProfile) {
+    return (
+      <EmptyState
+        title={t("common.accessDenied")}
+        description={t("common.accessDeniedEmployeeProfile")}
+      />
+    );
+  }
+
+  const fullName = `${employee.first_name} ${employee.last_name}`;
 
   return (
     <div className="space-y-8">
@@ -64,7 +92,10 @@ export function EmployeeProfilePage() {
       </Card>
 
       <Tabs defaultValue="personal">
-        <TabsList variant="line" className="h-auto w-full justify-start overflow-x-auto">
+        <TabsList
+          variant="line"
+          className="h-auto w-full justify-start overflow-x-auto"
+        >
           <TabsTrigger value="personal" className="px-4 py-2.5 text-sm">
             {t("common.personalInfo")}
           </TabsTrigger>
@@ -80,9 +111,6 @@ export function EmployeeProfilePage() {
           <TabsTrigger value="leave" className="px-4 py-2.5 text-sm">
             {t("common.leave")}
           </TabsTrigger>
-          <TabsTrigger value="payroll" className="px-4 py-2.5 text-sm">
-            {t("common.payrollStubs")}
-          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="personal">
@@ -95,7 +123,10 @@ export function EmployeeProfilePage() {
                 items={[
                   { label: t("common.email"), value: employee.email },
                   { label: t("common.phone"), value: employee.phone },
-                  { label: t("common.nationality"), value: employee.nationality },
+                  {
+                    label: t("common.nationality"),
+                    value: employee.nationality,
+                  },
                   { label: t("common.address"), value: employee.address },
                 ]}
               />
@@ -114,7 +145,10 @@ export function EmployeeProfilePage() {
                   { label: t("common.jobTitle"), value: employee.job_title },
                   { label: t("common.department"), value: employee.department },
                   { label: t("common.manager"), value: employee.manager_name },
-                  { label: t("common.workTypeLabel"), value: employee.work_type },
+                  {
+                    label: t("common.workTypeLabel"),
+                    value: employee.work_type,
+                  },
                   { label: t("common.shiftLabel"), value: employee.shift },
                 ]}
               />
@@ -131,8 +165,14 @@ export function EmployeeProfilePage() {
               {employee.contract ? (
                 <InfoList
                   items={[
-                    { label: t("common.contractType"), value: employee.contract.contract_type },
-                    { label: t("common.startDate"), value: employee.contract.start_date },
+                    {
+                      label: t("common.contractType"),
+                      value: employee.contract.contract_type,
+                    },
+                    {
+                      label: t("common.startDate"),
+                      value: employee.contract.start_date,
+                    },
                     {
                       label: t("common.salary"),
                       value: employee.contract.salary
@@ -152,16 +192,18 @@ export function EmployeeProfilePage() {
           <EmployeeAttendancePanel employeeId={employee.id} />
         </TabsContent>
 
-        {["leave", "payroll"].map((tab) => (
+        {["leave"].map((tab) => (
           <TabsContent key={tab} value={tab}>
             <Alert>
               <Clock />
               <AlertTitle>{t("common.comingSoon")}</AlertTitle>
-              <AlertDescription>{t(`common.${tab === "payroll" ? "payrollStubs" : tab}`)}</AlertDescription>
+              <AlertDescription>
+                {t(`common.${tab.toLowerCase()}`)}
+              </AlertDescription>
             </Alert>
           </TabsContent>
         ))}
       </Tabs>
     </div>
-  )
+  );
 }

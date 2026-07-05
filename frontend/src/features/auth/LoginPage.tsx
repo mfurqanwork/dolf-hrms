@@ -38,7 +38,7 @@ export function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-[#f8fafc] p-6">
+    <div className="flex h-full items-center justify-center overflow-y-auto bg-[#f8fafc] p-6">
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(37,99,235,0.12),transparent_40%),radial-gradient(circle_at_bottom_right,rgba(249,115,22,0.1),transparent_35%)]" />
       <Card className="relative w-full max-w-md border-border/80 shadow-xl">
         <CardHeader className="space-y-4 pb-2 text-center">

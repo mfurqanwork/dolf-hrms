@@ -1,6 +1,7 @@
-import { Globe, LogOut, Menu, Moon, Sun } from "lucide-react";
+import { Globe, LogOut, Menu, Moon, Sun, User } from "lucide-react";
 import { useTranslation } from "react-i18next";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -18,6 +19,9 @@ import {
 } from "@/components/ui/tooltip";
 import { useAuthStore } from "@/stores/authStore";
 import { AttendanceActions } from "@/components/layout/AttendanceActions";
+import { getRoleLabel } from "@/lib/auth";
+import { useEmployees } from "@/hooks/useHrmsApi";
+import { paths } from "@/routes";
 
 interface TopbarProps {
   onMenuClick?: () => void;
@@ -25,6 +29,7 @@ interface TopbarProps {
 
 export function Topbar({ onMenuClick }: TopbarProps) {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const user = useAuthStore((s) => s.user);
   const logout = useAuthStore((s) => s.logout);
   const [dark, setDark] = useState(() =>
@@ -36,6 +41,24 @@ export function Topbar({ onMenuClick }: TopbarProps) {
     localStorage.setItem("hrms-theme", dark ? "dark" : "light");
   }, [dark]);
 
+  const { data: employees = [] } = useEmployees();
+
+  const ownEmployee = useMemo(
+    () => employees.find((employee) => employee.user_id === user?.id),
+    [employees, user?.id],
+  );
+
+  const headerLabel = useMemo(() => {
+    const roleLabel = getRoleLabel(t, user?.role);
+    if (user?.role !== "employee") return roleLabel;
+    if (!ownEmployee?.job_title) return roleLabel;
+
+    return t("common.roleWithJobTitle", {
+      role: roleLabel,
+      jobTitle: ownEmployee.job_title,
+    });
+  }, [ownEmployee?.job_title, t, user?.role]);
+
   const initials =
     user?.full_name
       ?.split(" ")
@@ -45,7 +68,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
       .toUpperCase() ?? "DT";
 
   return (
-    <header className="sticky top-0 z-30 flex h-[6rem] shrink-0 items-center justify-between border-b border-border/80 bg-card/95 px-6 backdrop-blur-sm">
+    <header className="z-30 flex h-24 shrink-0 items-center justify-between border-b border-border/80 bg-card/95 px-6 backdrop-blur-sm">
       <div className="flex min-w-0 items-center gap-3">
         <Tooltip>
           <TooltipTrigger>
@@ -61,7 +84,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
           <TooltipContent>Menu</TooltipContent>
         </Tooltip>
         <p className="truncate font-heading text-lg font-semibold text-foreground md:text-xl">
-          {user?.full_name}
+          {headerLabel}
         </p>
       </div>
 
@@ -115,7 +138,7 @@ export function Topbar({ onMenuClick }: TopbarProps) {
                 </AvatarFallback>
               </Avatar>
               <span className="hidden max-w-[10rem] truncate text-sm font-medium sm:inline">
-                {user?.email}
+                {user?.full_name}
               </span>
             </Button>
           </DropdownMenuTrigger>
@@ -124,6 +147,14 @@ export function Topbar({ onMenuClick }: TopbarProps) {
               {user?.email}
             </DropdownMenuItem>
             <DropdownMenuSeparator />
+            {user?.role === "employee" && ownEmployee && (
+              <DropdownMenuItem
+                onClick={() => navigate(paths.employee(ownEmployee.id))}
+              >
+                <User className="size-4" />
+                <span className="hidden sm:inline">{t("common.profile")}</span>
+              </DropdownMenuItem>
+            )}
             <DropdownMenuItem onClick={logout} className="text-destructive">
               <LogOut className="size-4" />
               {t("common.logout")}
