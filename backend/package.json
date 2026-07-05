@@ -1,0 +1,14 @@
+{
+  "name": "dolftech-hrms-backend",
+  "private": true,
+  "description": "Dolf HRMS API — Alembic migration scripts",
+  "scripts": {
+    "db:migrate": "alembic upgrade head",
+    "db:migrate:down": "alembic downgrade -1",
+    "db:current": "alembic current",
+    "db:history": "alembic history --verbose",
+    "db:check": "alembic check",
+    "db:revision": "alembic revision --autogenerate",
+    "db:stamp": "alembic stamp head"
+  }
+}

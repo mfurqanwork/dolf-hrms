@@ -39,19 +39,15 @@ npm install
 npm run dev
 ```
 
-Place brand assets:
-- `frontend/public/favicon.png`
-- `frontend/public/dolftech-logo.png`
-
 ## Demo Credentials
 
 Default password for all accounts: **`DolfTech123!`**
 
-| Role | Email |
-|------|-------|
-| Super Admin | `admin@dolftech.com` |
-| HR Manager | `b.alobaidan@dolftech.com` |
-| Full Stack Developer | `m.furqan@dolftech.com` |
+| Role                 | Email                      |
+| -------------------- | -------------------------- |
+| Super Admin          | `admin@dolftech.com`       |
+| HR Manager           | `b.alobaidan@dolftech.com` |
+| Full Stack Developer | `m.furqan@dolftech.com`    |
 
 All Dolf Technologies employees use `{first_initial}.{lastname}@dolftech.com`.
 
@@ -69,4 +65,8 @@ cd backend && .\.venv\Scripts\Activate.ps1 && pytest
 
 # Frontend
 cd frontend && npm run test
+
+# Database
+npm run db:migrate    # apply migrations
+npm run db:check      # verify schema matches models
 ```

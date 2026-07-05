@@ -1,0 +1,22 @@
+{
+  "name": "dolftech-hrms",
+  "private": true,
+  "description": "Dolf HRMS monorepo — root scripts for backend, frontend, and database",
+  "scripts": {
+    "dev": "docker compose up --build",
+    "dev:backend": "cd backend && uvicorn app.main:app --reload --port 8000",
+    "dev:frontend": "cd frontend && npm run dev",
+    "db:migrate": "npm --prefix backend run db:migrate",
+    "db:migrate:down": "npm --prefix backend run db:migrate:down",
+    "db:current": "npm --prefix backend run db:current",
+    "db:history": "npm --prefix backend run db:history",
+    "db:check": "npm --prefix backend run db:check",
+    "db:revision": "npm --prefix backend run db:revision --",
+    "db:stamp": "npm --prefix backend run db:stamp",
+    "db:seed": "cd backend && python -m scripts.seed",
+    "test": "npm run test:backend && npm run test:frontend",
+    "test:backend": "cd backend && pytest",
+    "test:frontend": "cd frontend && npm run test",
+    "lint:frontend": "cd frontend && npm run lint"
+  }
+}
