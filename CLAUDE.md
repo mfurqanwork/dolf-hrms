@@ -95,12 +95,12 @@ Schema is managed by **Alembic** (`backend/alembic/`). App startup and Docker ru
 
 ```powershell
 npm run db:migrate                      # apply pending migrations
-npm run db:revision -- add_leave_table  # autogenerate from model diff
+npm run db:revision -- add_leave_table  # skips if no model changes
 npm run db:check                        # fail if models drift from migrations
 npm run db:stamp                        # one-time: mark existing DB as migrated
 ```
 
-**Required when changing models:** generate migration → review file in `alembic/versions/` → migrate → `db:check` → commit migration with model change.
+**Required when changing models:** edit model → `db:revision` (creates file only when schema changed) → review `alembic/versions/` → migrate → `db:check` → commit migration with model change.
 
 **Production:** run `alembic upgrade head` before starting the API.
 

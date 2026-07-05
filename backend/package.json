@@ -3,12 +3,12 @@
   "private": true,
   "description": "Dolf HRMS API — Alembic migration scripts",
   "scripts": {
-    "db:migrate": "alembic upgrade head",
-    "db:migrate:down": "alembic downgrade -1",
-    "db:current": "alembic current",
-    "db:history": "alembic history --verbose",
-    "db:check": "alembic check",
-    "db:revision": "alembic revision --autogenerate",
-    "db:stamp": "alembic stamp head"
+    "db:migrate": "node scripts/run-alembic.cjs upgrade head",
+    "db:migrate:down": "node scripts/run-alembic.cjs downgrade -1",
+    "db:current": "node scripts/run-alembic.cjs current",
+    "db:history": "node scripts/run-alembic.cjs history --verbose",
+    "db:check": "node scripts/run-alembic.cjs check",
+    "db:revision": "node scripts/run-alembic.cjs revision --autogenerate -m",
+    "db:stamp": "node scripts/run-alembic.cjs stamp head"
   }
 }

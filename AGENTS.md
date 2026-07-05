@@ -6,11 +6,11 @@ This document tells AI coding agents how this repo is organized, what convention
 
 **Dolf HRMS** is a multi-tenant HR management MVP (monorepo).
 
-| Layer    | Stack |
-| -------- | ----- |
-| Backend  | FastAPI, SQLModel, async PostgreSQL, JWT auth |
+| Layer    | Stack                                                                                                           |
+| -------- | --------------------------------------------------------------------------------------------------------------- |
+| Backend  | FastAPI, SQLModel, async PostgreSQL, JWT auth                                                                   |
 | Frontend | React 19, TypeScript, Vite, Tailwind 4, shadcn/ui, TanStack Query, React Router, Zustand, i18next (EN/AR + RTL) |
-| Infra    | Docker Compose (Postgres + API + frontend) |
+| Infra    | Docker Compose (Postgres + API + frontend)                                                                      |
 
 - API base: `http://localhost:8000/api/v1`
 - Frontend dev: `http://localhost:5173`
@@ -68,21 +68,21 @@ dolftech-hrms/
 Use `@/` for all `src/` imports (configured in `tsconfig.app.json`).
 
 ```ts
-import { useEmployees } from "@/hooks/useHrmsApi"
-import { PageHeader } from "@/components/shared/PageHeader"
+import { useEmployees } from "@/hooks/useHrmsApi";
+import { PageHeader } from "@/components/shared/PageHeader";
 ```
 
 ### Folder responsibilities
 
-| Folder | Purpose | Put here |
-| ------ | ------- | -------- |
-| `features/<domain>/` | Domain screens | `*Page.tsx`, feature-only components, `columns.tsx` |
-| `components/ui/` | shadcn primitives | Buttons, cards, tables — generated/low-level |
-| `components/shared/` | Cross-feature UI | `PageHeader`, `StatCard`, `EmptyState`, `BoolBadge` |
-| `components/layout/` | App chrome & guards | `AppShell`, `Sidebar`, `ProtectedRoute`, `AdminRoute` |
-| `hooks/` | Data layer (React Query) | `useHrmsApi.ts` — all API hooks + `queryKeys` |
-| `lib/` | Pure utilities & config | `api.ts`, `types.ts`, `utils.ts`, `datetime.ts`, `employee.ts` |
-| `stores/` | Client global state | Zustand stores (auth today) |
+| Folder               | Purpose                  | Put here                                                       |
+| -------------------- | ------------------------ | -------------------------------------------------------------- |
+| `features/<domain>/` | Domain screens           | `*Page.tsx`, feature-only components, `columns.tsx`            |
+| `components/ui/`     | shadcn primitives        | Buttons, cards, tables — generated/low-level                   |
+| `components/shared/` | Cross-feature UI         | `PageHeader`, `StatCard`, `EmptyState`, `BoolBadge`            |
+| `components/layout/` | App chrome & guards      | `AppShell`, `Sidebar`, `ProtectedRoute`, `AdminRoute`          |
+| `hooks/`             | Data layer (React Query) | `useHrmsApi.ts` — all API hooks + `queryKeys`                  |
+| `lib/`               | Pure utilities & config  | `api.ts`, `types.ts`, `utils.ts`, `datetime.ts`, `employee.ts` |
+| `stores/`            | Client global state      | Zustand stores (auth today)                                    |
 
 ### Standard list page pattern
 
@@ -96,8 +96,8 @@ Follow `EmployeesPage` and `AttendancePage`:
 
 ```tsx
 // features/employees/EmployeesPage.tsx — orchestration only
-const { data = [], isLoading } = useEmployees()
-const columns = useMemo(() => getEmployeeColumns(t), [t])
+const { data = [], isLoading } = useEmployees();
+const columns = useMemo(() => getEmployeeColumns(t), [t]);
 ```
 
 ```tsx
@@ -147,14 +147,14 @@ export function getEmployeeColumns(t: TFunction): ColumnDef<Employee>[] { ... }
 
 ### Layer responsibilities
 
-| Layer | Location | Responsibility |
-| ----- | -------- | -------------- |
-| Routes | `app/api/` | HTTP handling, auth deps, status codes |
-| Schemas | `app/schemas/` | Pydantic `*Read`, `*Create`, `*Update` models |
-| Models | `app/models/` | SQLModel tables, relationships, enums |
-| Core | `app/core/` | Settings, DB session, JWT, `get_current_user`, `require_roles` |
-| Services | `app/services/` | (future) complex business logic extracted from routes |
-| CRUD | `app/crud/` | (future) reusable DB queries |
+| Layer    | Location        | Responsibility                                                 |
+| -------- | --------------- | -------------------------------------------------------------- |
+| Routes   | `app/api/`      | HTTP handling, auth deps, status codes                         |
+| Schemas  | `app/schemas/`  | Pydantic `*Read`, `*Create`, `*Update` models                  |
+| Models   | `app/models/`   | SQLModel tables, relationships, enums                          |
+| Core     | `app/core/`     | Settings, DB session, JWT, `get_current_user`, `require_roles` |
+| Services | `app/services/` | (future) complex business logic extracted from routes          |
+| CRUD     | `app/crud/`     | (future) reusable DB queries                                   |
 
 Currently business logic lives in route modules (`router.py`, `attendance.py`, `auth.py`). When logic grows beyond ~30 lines or is reused, extract to `app/services/`.
 
@@ -170,11 +170,11 @@ Currently business logic lives in route modules (`router.py`, `attendance.py`, `
 
 Roles (`UserRole` enum):
 
-| Role | Access |
-| ---- | ------ |
-| `super_admin` | All companies |
-| `company_admin` | Own `company_id` only |
-| `employee` | Own profile, own requests, check-in/out |
+| Role            | Access                                  |
+| --------------- | --------------------------------------- |
+| `super_admin`   | All companies                           |
+| `company_admin` | Own `company_id` only                   |
+| `employee`      | Own profile, own requests, check-in/out |
 
 Use these deps from `app/core/deps.py`:
 
@@ -201,36 +201,39 @@ if current_user.role != UserRole.SUPER_ADMIN:
 
 Schema changes are managed with **Alembic** — never use `SQLModel.metadata.create_all` in application code.
 
-| Piece | Location |
-| ----- | -------- |
-| Migration config | `backend/alembic.ini`, `backend/alembic/env.py` |
-| Revision files | `backend/alembic/versions/` |
-| Runtime runner | `app/core/migrations.py` → `init_db()` on app startup |
-| Sync driver (migrations only) | `settings.sync_database_url` (`psycopg2`) |
+| Piece                         | Location                                              |
+| ----------------------------- | ----------------------------------------------------- |
+| Migration config              | `backend/alembic.ini`, `backend/alembic/env.py`       |
+| Revision files                | `backend/alembic/versions/`                           |
+| Runtime runner                | `app/core/migrations.py` → `init_db()` on app startup |
+| Sync driver (migrations only) | `settings.sync_database_url` (`psycopg2`)             |
 
 **Startup flow:** `alembic upgrade head` → seed (Docker) → API serves requests.
 
 #### When you add or change a model
 
 1. Edit the SQLModel in `app/models/`.
-2. **Generate a migration** (dev database must be running):
+2. Ensure the backend venv exists (`backend/.venv` with `pip install -r requirements.txt`).
+3. **Generate a migration** (dev database must be running). If models match the DB, no file is created:
 
    ```powershell
    # From repo root
    npm run db:revision -- describe_change_here
 
    # Or from backend/
-   alembic revision --autogenerate -m "describe_change_here"
+   npm run db:revision -- describe_change_here
    ```
 
-3. **Review** the generated file in `alembic/versions/` — autogenerate is not perfect; fix enums, defaults, and renames manually.
-4. **Apply locally:**
+   Output when nothing changed: `No schema changes detected. No migration file was created.`
+
+4. **Review** the generated file in `alembic/versions/` — autogenerate is not perfect; fix enums, defaults, and renames manually.
+5. **Apply locally:**
 
    ```powershell
    npm run db:migrate
    ```
 
-5. **Verify models match migrations** (run before committing):
+6. **Verify models match migrations** (run before committing):
 
    ```powershell
    npm run db:check
@@ -238,19 +241,19 @@ Schema changes are managed with **Alembic** — never use `SQLModel.metadata.cre
 
    This fails if model changes exist without a corresponding migration file.
 
-6. **Commit the migration file** alongside the model change. Production and Docker apply it via `alembic upgrade head`.
+7. **Commit the migration file** alongside the model change. Production and Docker apply it via `alembic upgrade head`.
 
 #### Migration commands (root `package.json`)
 
-| Command | Purpose |
-| ------- | ------- |
-| `npm run db:migrate` | Apply all pending migrations (`upgrade head`) |
-| `npm run db:revision -- <message>` | Autogenerate a new migration from model diff |
-| `npm run db:check` | Fail if models drift from latest migration |
-| `npm run db:current` | Show current revision |
-| `npm run db:history` | List migration history |
-| `npm run db:stamp` | Mark DB as migrated without running SQL (see below) |
-| `npm run db:seed` | Run seed script (after migrations) |
+| Command                            | Purpose                                             |
+| ---------------------------------- | --------------------------------------------------- |
+| `npm run db:migrate`               | Apply all pending migrations (`upgrade head`)       |
+| `npm run db:revision -- <message>` | Autogenerate migration; skips file creation when schema unchanged |
+| `npm run db:check`                 | Fail if models drift from latest migration          |
+| `npm run db:current`               | Show current revision                               |
+| `npm run db:history`               | List migration history                              |
+| `npm run db:stamp`                 | Mark DB as migrated without running SQL (see below) |
+| `npm run db:seed`                  | Run seed script (after migrations)                  |
 
 #### Existing databases (one-time)
 
@@ -264,11 +267,11 @@ Only do this when the live schema already matches the latest migration.
 
 #### Dev vs production
 
-| Environment | What runs migrations |
-| ----------- | -------------------- |
-| Local dev | `npm run db:migrate` manually, or app startup via `init_db()` |
-| Docker Compose | `alembic upgrade head` before seed in `docker-compose.yml` |
-| Production | `alembic upgrade head` as a deploy step (before starting uvicorn) |
+| Environment    | What runs migrations                                              |
+| -------------- | ----------------------------------------------------------------- |
+| Local dev      | `npm run db:migrate` manually, or app startup via `init_db()`     |
+| Docker Compose | `alembic upgrade head` before seed in `docker-compose.yml`        |
+| Production     | `alembic upgrade head` as a deploy step (before starting uvicorn) |
 
 - Async SQLAlchemy session via `get_session` dependency for API handlers.
 - Seed data: `python -m scripts.seed` (also runs in Docker after migrations).
@@ -332,15 +335,15 @@ npm run db:check              # verify models match migrations
 
 ## Environment & Commands
 
-| Command | Purpose |
-| ------- | ------- |
-| `docker compose up --build` | Full stack (migrates → seeds → starts API) |
-| `npm run db:migrate` | Apply pending Alembic migrations |
-| `npm run db:revision -- <msg>` | Autogenerate migration from model changes |
-| `npm run db:check` | Verify no model/migration drift |
-| `cd backend && uvicorn app.main:app --reload` | API only |
-| `cd frontend && npm run dev` | Frontend only |
-| `npm run db:seed` | Seed demo data (after migrations) |
+| Command                                       | Purpose                                    |
+| --------------------------------------------- | ------------------------------------------ |
+| `docker compose up --build`                   | Full stack (migrates → seeds → starts API) |
+| `npm run db:migrate`                          | Apply pending Alembic migrations           |
+| `npm run db:revision -- <msg>`                | Autogenerate migration from model changes  |
+| `npm run db:check`                            | Verify no model/migration drift            |
+| `cd backend && uvicorn app.main:app --reload` | API only                                   |
+| `cd frontend && npm run dev`                  | Frontend only                              |
+| `npm run db:seed`                             | Seed demo data (after migrations)          |
 
 Copy `.env.example` → `.env` for local overrides. Never commit `.env`.
 
