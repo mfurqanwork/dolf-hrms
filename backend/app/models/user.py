@@ -3,9 +3,11 @@ from typing import Optional
 from uuid import UUID, uuid4
 
 import enum
+from sqlalchemy import Column
 from sqlmodel import Field, Relationship, SQLModel
 
 from app.models.company import Company
+from app.models.enums import pg_enum
 
 
 class UserRole(str, enum.Enum):
@@ -21,7 +23,14 @@ class User(SQLModel, table=True):
     email: str = Field(unique=True, index=True)
     hashed_password: str
     full_name: str
-    role: UserRole = Field(default=UserRole.EMPLOYEE)
+    role: UserRole = Field(
+        default=UserRole.EMPLOYEE,
+        sa_column=Column(
+            pg_enum(UserRole, "userrole"),
+            nullable=False,
+            server_default="employee",
+        ),
+    )
     is_active: bool = Field(default=True)
     company_id: Optional[UUID] = Field(default=None, foreign_key="companies.id")
     created_at: datetime = Field(default_factory=datetime.utcnow)

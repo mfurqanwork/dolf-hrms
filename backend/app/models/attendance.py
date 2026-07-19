@@ -4,8 +4,10 @@ from enum import Enum
 from typing import TYPE_CHECKING, Optional
 from uuid import UUID
 
-from sqlalchemy import UniqueConstraint
+from sqlalchemy import Column, UniqueConstraint
 from sqlmodel import Field, Relationship, SQLModel
+
+from app.models.enums import pg_enum
 
 if TYPE_CHECKING:
     from app.models.company import Company
@@ -41,7 +43,14 @@ class AttendanceRecord(SQLModel, table=True):
     scheduled_start: time = Field(default=SCHEDULED_START)
     scheduled_end: time = Field(default=SCHEDULED_END)
     hours_worked: float | None = None
-    status: AttendanceStatus = Field(default=AttendanceStatus.PRESENT)
+    status: AttendanceStatus = Field(
+        default=AttendanceStatus.PRESENT,
+        sa_column=Column(
+            pg_enum(AttendanceStatus, "attendancestatus"),
+            nullable=False,
+            server_default="present",
+        ),
+    )
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
     company: Optional["Company"] = Relationship(back_populates="attendance_records")
