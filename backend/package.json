@@ -3,6 +3,7 @@
   "private": true,
   "description": "Dolf HRMS API — Alembic migration scripts",
   "scripts": {
+    "build": "python -m alembic upgrade head && python -m scripts.seed",
     "db:migrate": "node scripts/run-alembic.cjs upgrade head",
     "db:migrate:down": "node scripts/run-alembic.cjs downgrade -1",
     "db:current": "node scripts/run-alembic.cjs current",
