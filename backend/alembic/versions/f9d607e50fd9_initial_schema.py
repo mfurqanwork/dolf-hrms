@@ -16,12 +16,26 @@ down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-userrole = sa.Enum("super_admin", "company_admin", "employee", name="userrole")
-attendancestatus = sa.Enum(
-    "present", "late", "absent", "on_leave", "half_day", name="attendancestatus"
+# create_type=False so create_table does not emit a second CREATE TYPE after the
+# explicit .create(checkfirst=True) calls below (Postgres DuplicateObject otherwise).
+userrole = sa.Enum(
+    "super_admin", "company_admin", "employee", name="userrole", create_type=False
 )
-requesttype = sa.Enum("document", "shift", "work_type", name="requesttype")
-requeststatus = sa.Enum("pending", "approved", "rejected", name="requeststatus")
+attendancestatus = sa.Enum(
+    "present",
+    "late",
+    "absent",
+    "on_leave",
+    "half_day",
+    name="attendancestatus",
+    create_type=False,
+)
+requesttype = sa.Enum(
+    "document", "shift", "work_type", name="requesttype", create_type=False
+)
+requeststatus = sa.Enum(
+    "pending", "approved", "rejected", name="requeststatus", create_type=False
+)
 
 
 def upgrade() -> None:
