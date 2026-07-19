@@ -10,12 +10,12 @@ A full-stack HRMS MVP for **employee management**, **attendance**, **requests**,
   <img src="https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
   <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
   <img src="https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/Vercel-000000?style=for-the-badge&logo=vercel&logoColor=white" alt="Vercel" />
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/badge/License-Private-red?style=flat-square" alt="License" />
   <img src="https://img.shields.io/badge/Status-MVP-orange?style=flat-square" alt="Status" />
-  <img src="https://img.shields.io/badge/i18n-EN%20%7C%20AR-blue?style=flat-square" alt="i18n" />
   <img src="https://img.shields.io/badge/Auth-JWT-green?style=flat-square" alt="Auth" />
 </p>
 
@@ -50,15 +50,14 @@ A full-stack HRMS MVP for **employee management**, **attendance**, **requests**,
 
 ### Backend
 
-| Tool | Role |
-| ---- | ---- |
-| <img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" /> | Async REST API |
-| <img src="https://img.shields.io/badge/SQLModel-sqlalchemy-D71F00?style=flat-square&logo=sqlalchemy&logoColor=white" alt="SQLModel" /> | ORM + Pydantic models |
-| <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" /> | Primary database |
-| <img src="https://img.shields.io/badge/Alembic-3776AB?style=flat-square&logo=python&logoColor=white" alt="Alembic" /> | Schema migrations |
-| <img src="https://img.shields.io/badge/JWT-000000?style=flat-square&logo=jsonwebtokens&logoColor=white" alt="JWT" /> | Token-based auth |
-| <img src="https://img.shields.io/badge/Uvicorn-499848?style=flat-square&logo=fastapi&logoColor=white" alt="Uvicorn" /> | ASGI server |
-| <img src="https://img.shields.io/badge/Pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white" alt="Pytest" /> | Backend tests |
+| Tool                                                                                                                            | Role              |
+| ------------------------------------------------------------------------------------------------------------------------------- | ----------------- |
+| <img src="https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" />          | Async REST API    |
+| <img src="https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white" alt="PostgreSQL" /> | Primary database  |
+| <img src="https://img.shields.io/badge/Alembic-3776AB?style=flat-square&logo=python&logoColor=white" alt="Alembic" />           | Schema migrations |
+| <img src="https://img.shields.io/badge/Auth-JWT-green?style=flat-square" alt="JWT" />                                           | Token-based auth  |
+| <img src="https://img.shields.io/badge/Uvicorn-499848?style=flat-square&logo=fastapi&logoColor=white" alt="Uvicorn" />          | ASGI server       |
+| <img src="https://img.shields.io/badge/Pytest-0A9EDC?style=flat-square&logo=pytest&logoColor=white" alt="Pytest" />             | Backend tests     |
 
 ```text
 Python · FastAPI · SQLModel · SQLAlchemy · asyncpg · Pydantic · Alembic · python-jose · Passlib · Pytest · Ruff
@@ -66,16 +65,16 @@ Python · FastAPI · SQLModel · SQLAlchemy · asyncpg · Pydantic · Alembic ·
 
 ### Frontend
 
-| Tool | Role |
-| ---- | ---- |
-| <img src="https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React" /> | UI framework |
-| <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" /> | Type safety |
-| <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" /> | Build tool |
-| <img src="https://img.shields.io/badge/Tailwind_4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" /> | Styling |
-| <img src="https://img.shields.io/badge/shadcn%2Fui-000000?style=flat-square&logo=shadcnui&logoColor=white" alt="shadcn/ui" /> | Component system |
-| <img src="https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white" alt="TanStack Query" /> | Server state |
-| <img src="https://img.shields.io/badge/Zustand-443E38?style=flat-square&logo=react&logoColor=white" alt="Zustand" /> | Client auth state |
-| <img src="https://img.shields.io/badge/i18next-26A69A?style=flat-square&logo=i18next&logoColor=white" alt="i18next" /> | Internationalization |
+| Tool                                                                                                                                    | Role                 |
+| --------------------------------------------------------------------------------------------------------------------------------------- | -------------------- |
+| <img src="https://img.shields.io/badge/React_19-61DAFB?style=flat-square&logo=react&logoColor=black" alt="React" />                     | UI framework         |
+| <img src="https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white" alt="TypeScript" />         | Type safety          |
+| <img src="https://img.shields.io/badge/Vite-646CFF?style=flat-square&logo=vite&logoColor=white" alt="Vite" />                           | Build tool           |
+| <img src="https://img.shields.io/badge/Tailwind_4-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind" />          | Styling              |
+| <img src="https://img.shields.io/badge/shadcn%2Fui-000000?style=flat-square&logo=shadcnui&logoColor=white" alt="shadcn/ui" />           | Component system     |
+| <img src="https://img.shields.io/badge/TanStack_Query-FF4154?style=flat-square&logo=reactquery&logoColor=white" alt="TanStack Query" /> | Server state         |
+| <img src="https://img.shields.io/badge/Zustand-443E38?style=flat-square&logo=react&logoColor=white" alt="Zustand" />                    | Client auth state    |
+| <img src="https://img.shields.io/badge/i18next-26A69A?style=flat-square&logo=i18next&logoColor=white" alt="i18next" />                  | Internationalization |
 
 ```text
 React 19 · TypeScript · Vite · Tailwind CSS 4 · shadcn/ui · TanStack Query · TanStack Table · React Router · Axios · Zustand · React Hook Form · Zod · Recharts · i18next · Vitest · Oxlint
