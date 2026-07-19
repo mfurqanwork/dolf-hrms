@@ -3,7 +3,7 @@
   "private": true,
   "description": "Dolf HRMS API — Alembic migration scripts",
   "scripts": {
-    "build": "python -m alembic upgrade head && python -m scripts.seed",
+    "build": "python -c \"import os; assert os.getenv('DATABASE_URL') or os.getenv('POSTGRES_URL'), 'Set DATABASE_URL (or POSTGRES_URL) in Vercel Project Settings for Build and Runtime'; from app.core.config import settings; print('Migrating:', settings.sync_database_url.split('@')[-1])\" && python -m alembic upgrade head && python -m scripts.seed",
     "db:migrate": "node scripts/run-alembic.cjs upgrade head",
     "db:migrate:down": "node scripts/run-alembic.cjs downgrade -1",
     "db:current": "node scripts/run-alembic.cjs current",
