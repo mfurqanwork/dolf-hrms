@@ -9,6 +9,7 @@ from typing import Sequence, Union
 
 import sqlalchemy as sa
 from alembic import op
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision: str = "f9d607e50fd9"
@@ -16,12 +17,16 @@ down_revision: Union[str, Sequence[str], None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
 
-# create_type=False so create_table does not emit a second CREATE TYPE after the
-# explicit .create(checkfirst=True) calls below (Postgres DuplicateObject otherwise).
-userrole = sa.Enum(
-    "super_admin", "company_admin", "employee", name="userrole", create_type=False
+# Use postgresql.ENUM with create_type=False. Plain sa.Enum still emits CREATE TYPE
+# on table create under Postgres, which collides after an explicit create.
+userrole = postgresql.ENUM(
+    "super_admin",
+    "company_admin",
+    "employee",
+    name="userrole",
+    create_type=False,
 )
-attendancestatus = sa.Enum(
+attendancestatus = postgresql.ENUM(
     "present",
     "late",
     "absent",
@@ -30,20 +35,52 @@ attendancestatus = sa.Enum(
     name="attendancestatus",
     create_type=False,
 )
-requesttype = sa.Enum(
-    "document", "shift", "work_type", name="requesttype", create_type=False
+requesttype = postgresql.ENUM(
+    "document",
+    "shift",
+    "work_type",
+    name="requesttype",
+    create_type=False,
 )
-requeststatus = sa.Enum(
-    "pending", "approved", "rejected", name="requeststatus", create_type=False
+requeststatus = postgresql.ENUM(
+    "pending",
+    "approved",
+    "rejected",
+    name="requeststatus",
+    create_type=False,
 )
+
+
+def _create_enum_if_not_exists(name: str, values: tuple[str, ...]) -> None:
+    literals = ", ".join(f"'{value}'" for value in values)
+    op.execute(
+        sa.text(
+            f"""
+            DO $$ BEGIN
+                CREATE TYPE {name} AS ENUM ({literals});
+            EXCEPTION
+                WHEN duplicate_object THEN NULL;
+            END $$;
+            """
+        )
+    )
 
 
 def upgrade() -> None:
     bind = op.get_bind()
-    userrole.create(bind, checkfirst=True)
-    attendancestatus.create(bind, checkfirst=True)
-    requesttype.create(bind, checkfirst=True)
-    requeststatus.create(bind, checkfirst=True)
+    inspector = sa.inspect(bind)
+    if "users" in inspector.get_table_names():
+        # Previous partial deploy left schema without alembic_version; treat as applied.
+        return
+
+    _create_enum_if_not_exists(
+        "userrole", ("super_admin", "company_admin", "employee")
+    )
+    _create_enum_if_not_exists(
+        "attendancestatus", ("present", "late", "absent", "on_leave", "half_day")
+    )
+    _create_enum_if_not_exists("requesttype", ("document", "shift", "work_type"))
+    _create_enum_if_not_exists("requeststatus", ("pending", "approved", "rejected"))
 
     op.create_table(
         "companies",
@@ -197,8 +234,7 @@ def downgrade() -> None:
     op.drop_index("ix_companies_name", table_name="companies")
     op.drop_table("companies")
 
-    bind = op.get_bind()
-    requeststatus.drop(bind, checkfirst=True)
-    requesttype.drop(bind, checkfirst=True)
-    attendancestatus.drop(bind, checkfirst=True)
-    userrole.drop(bind, checkfirst=True)
+    op.execute("DROP TYPE IF EXISTS requeststatus")
+    op.execute("DROP TYPE IF EXISTS requesttype")
+    op.execute("DROP TYPE IF EXISTS attendancestatus")
+    op.execute("DROP TYPE IF EXISTS userrole")
