@@ -46,6 +46,9 @@ def _normalize_database_url(url: str, *, driver: str, prefer_direct: bool = Fals
             query["ssl"] = query.pop("sslmode")
         elif not is_local and "ssl" not in query:
             query["ssl"] = "require"
+        # libpq-only options that asyncpg rejects (Neon adds channel_binding).
+        for key in ("channel_binding", "sslmode", "gssencmode", "sslcert", "sslkey", "sslrootcert"):
+            query.pop(key, None)
     elif not is_local and "sslmode" not in query:
         query["sslmode"] = "require"
 
